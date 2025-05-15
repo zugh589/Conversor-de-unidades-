@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conversor de Unidades</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background: #f2f2f2;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    select, input, button {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #resultado {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Conversor de Unidades</h1>
+  <div class="container">
+    <select id="grandeza" onchange="atualizarUnidades()">
+      <option value="comprimento">Comprimento</option>
+      <option value="massa">Massa</option>
+      <option value="temperatura">Temperatura</option>
+    </select>
+    <input type="number" id="valor" placeholder="Valor">
+    <select id="de"></select>
+    <select id="para"></select>
+    <button onclick="converter()">Converter</button>
+    <div id="resultado"></div>
+  </div>
+  <script>
+    const unidades = {
+      comprimento: ['metro', 'quilômetro', 'centímetro'],
+      massa: ['quilograma', 'grama', 'tonelada'],
+      temperatura: ['Celsius', 'Fahrenheit', 'Kelvin']
+    };
+
+    function atualizarUnidades() {
+      const grandeza = document.getElementById('grandeza').value;
+      const de = document.getElementById('de');
+      const para = document.getElementById('para');
+      de.innerHTML = '';
+      para.innerHTML = '';
+      unidades[grandeza].forEach(unidade => {
+        const optionDe = document.createElement('option');
+        optionDe.value = unidade;
+        optionDe.text = unidade;
+        de.appendChild(optionDe);
+        const optionPara = document.createElement('option');
+        optionPara.value = unidade;
+        optionPara.text = unidade;
+        para.appendChild(optionPara);
+      });
+    }
+
+    function converter() {
+      const valor = parseFloat(document.getElementById('valor').value);
+      const de = document.getElementById('de').value;
+      const para = document.getElementById('para').value;
+      const grandeza = document.getElementById('grandeza').value;
+      let resultado = 0;
+
+      if (grandeza === 'comprimento') {
+        const fatores = { metro: 1, quilômetro: 1000, centímetro: 0.01 };
+        resultado = valor * fatores[de] / fatores[para];
+      } else if (grandeza === 'massa') {
+        const fatores = { quilograma: 1, grama: 0.001, tonelada: 1000 };
+        resultado = valor * fatores[de] / fatores[para];
+      } else if (grandeza === 'temperatura') {
+        if (de === para) {
+          resultado = valor;
+        } else if (de === 'Celsius' && para === 'Fahrenheit') {
+          resultado = valor * 9/5 + 32;
+        } else if (de === 'Fahrenheit' && para === 'Celsius') {
+          resultado = (valor - 32) * 5/9;
+        } else if (de === 'Celsius' && para === 'Kelvin') {
+          resultado = valor + 273.15;
+        } else if (de === 'Kelvin' && para === 'Celsius') {
+          resultado = valor - 273.15;
+        } else if (de === 'Fahrenheit' && para === 'Kelvin') {
+          resultado = (valor - 32) * 5/9 + 273.15;
+        } else if (de === 'Kelvin' && para === 'Fahrenheit') {
+          resultado = (valor - 273.15) * 9/5 + 32;
+        }
+      }
+
+      document.getElementById('resultado').textContent = `Resultado: ${resultado.toFixed(2)}`;
+    }
+
+    window.onload = atualizarUnidades;
+  </script>
+</body>
+</html>
